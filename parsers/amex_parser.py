@@ -8,19 +8,9 @@ from .base_parser import BaseParser
 
 
 class AmexParser(BaseParser):
-    """Parser for American Express credit card statements"""
-    
-    def parse(self, pdf_path: str, verbose: bool = False) -> Optional[Dict]:
-        """
-        Parse American Express credit card statement
         
-        Args:
-            pdf_path: Path to the PDF file
-            verbose: Enable verbose output
-            
-        Returns:
-            Dictionary containing extracted data
-        """
+    def parse(self, pdf_path: str, verbose: bool = False) -> Optional[Dict]:
+       
         try:
             text = self.extract_text(pdf_path)
             
@@ -54,8 +44,7 @@ class AmexParser(BaseParser):
             return None
     
     def extract_billing_cycle_amex(self, text: str) -> Optional[Dict]:
-        """Extract billing cycle from American Express statement"""
-        # Amex format: "Statement Period: Jan 01 - Jan 31, 2024"
+               
         patterns = [
             r'statement period[:\s]+(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})\s*[\-–—]\s*(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})',
             r'closing date[:\s]+(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})',
@@ -70,8 +59,7 @@ class AmexParser(BaseParser):
         return {'start_date': None, 'end_date': None}
     
     def extract_due_date_amex(self, text: str) -> Optional[str]:
-        """Extract payment due date from American Express statement"""
-        # Amex format: "Payment Due Date: Feb 25, 2024"
+               
         patterns = [
             r'payment due date[:\s]+(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})',
             r'due date[:\s]+(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})',
@@ -83,12 +71,11 @@ class AmexParser(BaseParser):
         return None
     
     def extract_card_last_4_amex(self, text: str) -> Optional[str]:
-        """Extract card last 4 digits from American Express statement"""
-        # Amex format: "Card ending 1234"
+              
         patterns = [
             r'(?:card ending|account ending)[:\s]+(\d{4})',
             r'xxxx[-\s]*xxxx[-\s]*xxxx[-\s]*xxxx[-\s]*(\d{4})',
-            r'\d{4}[-\s]*\d{6}[-\s]*(\d{5})',  # Amex 15-digit format
+            r'\d{4}[-\s]*\d{6}[-\s]*(\d{5})',  
         ]
         for pattern in patterns:
             match = re.search(pattern, text, re.IGNORECASE)
@@ -97,8 +84,7 @@ class AmexParser(BaseParser):
         return None
     
     def extract_total_balance_amex(self, text: str) -> Optional[float]:
-        """Extract total balance from American Express statement"""
-        # Amex format: "BALANCE $1,234.56"
+                
         patterns = [
             r'(?:new|current|total)\s+balance[:\s]+\$?([\d,]+\.?\d*)',
             r'balance due[:\s]+\$?([\d,]+\.?\d*)',
@@ -113,7 +99,7 @@ class AmexParser(BaseParser):
         return None
     
     def extract_transactions_amex(self, pdf_path: str, verbose: bool = False) -> list:
-        """Extract transactions from American Express statement"""
+        
         transactions = []
         try:
             tables = self.extract_tables(pdf_path)
