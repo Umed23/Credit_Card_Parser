@@ -8,19 +8,9 @@ from .base_parser import BaseParser
 
 
 class CapitalOneParser(BaseParser):
-    """Parser for Capital One credit card statements"""
-    
-    def parse(self, pdf_path: str, verbose: bool = False) -> Optional[Dict]:
-        """
-        Parse Capital One credit card statement
         
-        Args:
-            pdf_path: Path to the PDF file
-            verbose: Enable verbose output
-            
-        Returns:
-            Dictionary containing extracted data
-        """
+    def parse(self, pdf_path: str, verbose: bool = False) -> Optional[Dict]:
+        
         try:
             text = self.extract_text(pdf_path)
             
@@ -54,8 +44,7 @@ class CapitalOneParser(BaseParser):
             return None
     
     def extract_billing_cycle_capital_one(self, text: str) -> Optional[Dict]:
-        """Extract billing cycle from Capital One statement"""
-        # Capital One format: "Statement Period: Jan 01 - Jan 31, 2024"
+        
         patterns = [
             r'statement period[:\s]+(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})\s*[\-–—]\s*(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})',
             r'statement closing date[:\s]+(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})',
@@ -70,8 +59,7 @@ class CapitalOneParser(BaseParser):
         return {'start_date': None, 'end_date': None}
     
     def extract_due_date_capital_one(self, text: str) -> Optional[str]:
-        """Extract payment due date from Capital One statement"""
-        # Capital One format: "Payment Due Date: Feb 25, 2024"
+        
         patterns = [
             r'payment due date[:\s]+(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})',
             r'due date[:\s]+(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})',
@@ -83,8 +71,7 @@ class CapitalOneParser(BaseParser):
         return None
     
     def extract_card_last_4_capital_one(self, text: str) -> Optional[str]:
-        """Extract card last 4 digits from Capital One statement"""
-        # Capital One format: "Account ending 1234"
+        
         patterns = [
             r'account ending[:\s]+(\d{4})',
             r'(?:card|account)\s*\*\*\*\*\s*(\d{4})',
@@ -97,8 +84,7 @@ class CapitalOneParser(BaseParser):
         return None
     
     def extract_total_balance_capital_one(self, text: str) -> Optional[float]:
-        """Extract total balance from Capital One statement"""
-        # Capital One format: "NEW BALANCE $1,234.56"
+       
         patterns = [
             r'new balance[:\s]+\$?([\d,]+\.?\d*)',
             r'total balance[:\s]+\$?([\d,]+\.?\d*)',
@@ -114,17 +100,17 @@ class CapitalOneParser(BaseParser):
         return None
     
     def extract_transactions_capital_one(self, pdf_path: str, verbose: bool = False) -> list:
-        """Extract transactions from Capital One statement"""
+       
         transactions = []
         try:
-            # First try to extract from tables
+            
             tables = self.extract_tables(pdf_path)
             
             for table in tables:
                 if not table or len(table) < 2:
                     continue
                 
-                # Look for header row
+                
                 header_row = None
                 for i, row in enumerate(table[:3]):
                     if row and any(keyword in ' '.join([str(cell) for cell in row if cell]).lower() 
@@ -133,7 +119,7 @@ class CapitalOneParser(BaseParser):
                         break
                 
                 if header_row is not None:
-                    # Extract transactions from table
+                    
                     for row in table[header_row + 1:]:
                         if row and len(row) >= 3:
                             try:
@@ -154,7 +140,7 @@ class CapitalOneParser(BaseParser):
                     if transactions:
                         break
             
-            # If no transactions found in tables, try text extraction
+            
             if not transactions:
                 text = self.extract_text(pdf_path)
                 lines = text.split('\n')
@@ -175,7 +161,6 @@ class CapitalOneParser(BaseParser):
         return transactions[:50]
     
     def _clean_amount(self, amount_str: str) -> Optional[float]:
-        """Clean and parse amount string"""
         try:
             amount_str = amount_str.replace('$', '').replace(',', '').strip()
             if amount_str.startswith('(') and amount_str.endswith(')'):
