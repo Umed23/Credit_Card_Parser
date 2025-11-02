@@ -1,7 +1,3 @@
-"""
-Chase Bank Credit Card Statement Parser
-"""
-
 import re
 from typing import Dict, Optional
 from .base_parser import BaseParser
@@ -161,7 +157,6 @@ class ChaseParser(BaseParser):
         return transactions[:50]  
     
     def _clean_amount(self, amount_str: str) -> Optional[float]:
-        """Clean and parse amount string"""
         try:
             amount_str = amount_str.replace('$', '').replace(',', '').strip()
             if amount_str.startswith('(') and amount_str.endswith(')'):
