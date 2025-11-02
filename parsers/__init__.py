@@ -1,5 +1,3 @@
-"""Credit card statement parsers for different issuers"""
-
 from .chase_parser import ChaseParser
 from .capital_one_parser import CapitalOneParser
 from .citi_parser import CitiParser
