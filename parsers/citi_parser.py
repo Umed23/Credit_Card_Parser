@@ -8,19 +8,9 @@ from .base_parser import BaseParser
 
 
 class CitiParser(BaseParser):
-    """Parser for Citibank credit card statements"""
     
     def parse(self, pdf_path: str, verbose: bool = False) -> Optional[Dict]:
-        """
-        Parse Citibank credit card statement
         
-        Args:
-            pdf_path: Path to the PDF file
-            verbose: Enable verbose output
-            
-        Returns:
-            Dictionary containing extracted data
-        """
         try:
             text = self.extract_text(pdf_path)
             
@@ -54,8 +44,6 @@ class CitiParser(BaseParser):
             return None
     
     def extract_billing_cycle_citi(self, text: str) -> Optional[Dict]:
-        """Extract billing cycle from Citibank statement"""
-        # Citi format: "Statement Period: 01/01/24 - 01/31/24"
         patterns = [
             r'statement period[:\s]+(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})\s*[\-–—]\s*(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})',
             r'billing period[:\s]+(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})\s+to\s+(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})',
@@ -71,8 +59,6 @@ class CitiParser(BaseParser):
         return {'start_date': None, 'end_date': None}
     
     def extract_due_date_citi(self, text: str) -> Optional[str]:
-        """Extract payment due date from Citibank statement"""
-        # Citi format: "Payment Due Date: 02/25/24"
         patterns = [
             r'payment due date[:\s]+(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})',
             r'due date[:\s]+(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})',
@@ -85,8 +71,6 @@ class CitiParser(BaseParser):
         return None
     
     def extract_card_last_4_citi(self, text: str) -> Optional[str]:
-        """Extract card last 4 digits from Citibank statement"""
-        # Citi format: "xxxx xxxx xxxx 1234" or "Account ending 1234"
         patterns = [
             r'(?:card ending|account ending)[:\s#]*(\d{4})',
             r'xxxx[-\s]*xxxx[-\s]*xxxx[-\s]*(\d{4})',
@@ -99,8 +83,6 @@ class CitiParser(BaseParser):
         return None
     
     def extract_total_balance_citi(self, text: str) -> Optional[float]:
-        """Extract total balance from Citibank statement"""
-        # Citi format: "NEW BALANCE $1,234.56"
         patterns = [
             r'new balance[:\s]+\$?([\d,]+\.?\d*)',
             r'total balance[:\s]+\$?([\d,]+\.?\d*)',
@@ -116,7 +98,6 @@ class CitiParser(BaseParser):
         return None
     
     def extract_transactions_citi(self, pdf_path: str, verbose: bool = False) -> list:
-        """Extract transactions from Citibank statement"""
         transactions = []
         try:
             tables = self.extract_tables(pdf_path)
@@ -173,7 +154,6 @@ class CitiParser(BaseParser):
         return transactions[:50]
     
     def _clean_amount(self, amount_str: str) -> Optional[float]:
-        """Clean and parse amount string"""
         try:
             amount_str = amount_str.replace('$', '').replace(',', '').strip()
             if amount_str.startswith('(') and amount_str.endswith(')'):
