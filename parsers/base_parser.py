@@ -1,7 +1,3 @@
-"""
-Base parser class with common functionality for all credit card statement parsers
-"""
-
 import re
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional
@@ -56,16 +52,7 @@ class BaseParser(ABC):
         return None
     
     def find_amount_pattern(self, text: str, field_name: str = None) -> Optional[float]:
-        """
-        Find amount patterns in text
-        
-        Args:
-            text: Text to search
-            field_name: Optional field name to search for
-            
-        Returns:
-            First matched amount or None
-        """
+       
         if field_name:
             pattern = rf'{field_name}[:\s]+\$?([\d,]+\.?\d*)'
         else:
