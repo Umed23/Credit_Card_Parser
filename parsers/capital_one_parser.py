@@ -1,7 +1,3 @@
-"""
-Capital One Credit Card Statement Parser
-"""
-
 import re
 from typing import Dict, Optional
 from .base_parser import BaseParser
